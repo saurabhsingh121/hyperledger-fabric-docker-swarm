@@ -2,7 +2,7 @@
 
 - We are using fabric version 1.4.4 in which raft mechanism has been introduced. Raft is native in the orderer service from 1.4.1. You can verify this by checking `configtx.yaml` where orderer profile is specified as `SampleMultiNodeEtcdRaft`.
 
-> This demo/tutorial is based on cluster of nodes created by docker-machine in which docker-machine uses default driver `--driver virtualbox`. So you need to [install Oracle Virtual Box]([I'm an inline-style link](https://www.virtualbox.org/wiki/Linux_Downloads) in order to follow this tutorial.
+> This demo/tutorial is based on cluster of nodes created by docker-machine in which docker-machine uses default driver `--driver virtualbox`. So you need to [install Oracle Virtual Box](https://www.virtualbox.org/wiki/Linux_Downloads) in order to follow this tutorial.
 
 ## Steps to do launch the network
 
