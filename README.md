@@ -32,5 +32,18 @@
   2.  `docker swarm join-token manager`
 - The last command will give you another to command to be executed on other nodes to be joined them as manager nodes in the cluster
   1.  `<output from join-token manager> --advertise-addr <node n ip address>`
-
-scp host1_stack.yaml docker@192.168.99.108:/home/docker/fabric-samples/raft-4node-swarm
+- Now we will connect all swarm nodes with overlay network. To create an overlay network execute following from node1 `docker network create --attachable --driver overlay first-network` where `first-network` is name of network. If it is successful and then you can check the network from any of the cluster nodes by executing `docker netwokr ls`. There, network scope will be **swarm**.
+- Now copy the fabric-sample downloaded earlier from your local pc to `node1`. To do that execute the below command
+  - `scp fabric-samples/ docker@<node1-ip-address>:/home/docker/`, it will ask for a password which is _tcuser_
+- Now follow the below commands to copy the configuration file
+  - `cd raft-4node-swarm`
+  - `cp ../first-network/crypto-config.yaml .`
+  - `cp ../first-network/configtx.yaml .`
+- And generate the required materials to boot up the network
+  - `../bin/cryptogen generate --config=./crypto-config.yaml`
+  - `export FABRIC_CFG_PATH=$PWD`
+  - `mkdir channel-artifacts`
+  - `../bin/configtxgen -profile SampleMultiNodeEtcdRaft -outputBlock ./channel-artifacts/genesis.block`
+  - `../bin/configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel`
+  - `../bin/configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP`
+  - `../bin/configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID mychannel -asOrg Org2MSP`
