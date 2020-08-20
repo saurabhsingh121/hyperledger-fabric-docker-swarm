@@ -26,7 +26,7 @@
 
 - You can ssh to these nodes by two ways. Choose either of below given methodes
   1.  `docker-machine ssh <node-name>`
-  2.  `ssh docker@<node-ip-address` which will prompt for password where password is `tcuser`
+  2.  `ssh docker@<node-ip-address` which will prompt for password where password is `tcuser`. You can get the ip address of node by `docker-machine ip <node-name>`
 - To make a swarm cluster first ssh to node1 and make it execute the below commands
   1.  `docker swarm init --advertise-addr <node1-ip-address>`
   2.  `docker swarm join-token manager`
@@ -47,3 +47,16 @@
   - `../bin/configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel`
   - `../bin/configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP`
   - `../bin/configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID mychannel -asOrg Org2MSP`
+- Now let's deploy our docker stack. To deploy it use the following command
+  - `docker stack deploy -c docker_stack.yaml hlf` where _docker_stack.yaml_ is docker stack config file and _hlf_ is docker stack name.
+  - Docker stack supports only version greater than or equals to 3.
+  - You can check the docker stack by `docker stack ls`
+  - There will be 10 services running across the swarm cluster. Five of orderer, four of peer and one cli service to interact with peers.
+  - You can check the total replication of services by `docker service ls`
+  - If you want to view specifics of one service you can do with `docker service ps <service-name>`
+  - If some service is in pending state or failing you can get the extend view of it by `docker service ps --no-trunc <service-name>`
+  - You can see the logs of the service by `docker service logs <service-name>`
+- Now let's create a channel and let all peers join it
+  - You can do docker ps and can get the cli container name or id to use it further
+  - Create channel genesis block for _mychannel_ `docker exec <cli-container-name> peer channel create -o orderer.example.com:7050 -c mychannel -f ./channel-artifacts/channel.tx --tls --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem`
+  - Join _peer0_org1_ to _mychannel_ `docker exec <cli-container-name> peer channel join -b mychannel.block`
