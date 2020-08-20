@@ -17,5 +17,20 @@
      - `export PATH=$PATH:$GOPATH/bin`
 - Install Hyperledger Fabric Components consisting docker images, binary tools and fabric samples using `curl -sSL http://bit.ly/2ysbOFE | bash -s 1.4.4`
 - We can verify the docker images pulled by `docker images`. You can see there are two types of tag for same docker image.
+- This tutorial runs on four nodes cluster. To make a four node cluster run the below commands.
+
+  1. `docker-machine create node1`
+  2. `docker-machine create node2`
+  3. `docker-machine create node3`
+  4. `docker-machine create node4`
+
+- You can ssh to these nodes by two ways. Choose either of below given methodes
+  1.  `docker-machine ssh <node-name>`
+  2.  `ssh docker@<node-ip-address` which will prompt for password where password is `tcuser`
+- To make a swarm cluster first ssh to node1 and make it execute the below commands
+  1.  `docker swarm init --advertise-addr <node1-ip-address>`
+  2.  `docker swarm join-token manager`
+- The last command will give you another to command to be executed on other nodes to be joined them as manager nodes in the cluster
+  1.  `<output from join-token manager> --advertise-addr <node n ip address>`
 
 scp host1_stack.yaml docker@192.168.99.108:/home/docker/fabric-samples/raft-4node-swarm
